@@ -16,14 +16,13 @@
         timerElm.textContent = `${hour}:${min}`;
     }
 
-    function deleteItem(e) {
-        const targetId = parseInt(e.target.parentNode.id);
+    function deleteItem(elm) {
+        const targetId = parseInt(elm.parentNode.id);
         shoppingList = shoppingList.filter(item => 
             item.id !== targetId
         );
-
         saveItem();
-        shoppingListElm.removeChild(e.target.parentNode);
+        shoppingListElm.removeChild(elm.parentNode);
     }
 
     function saveItem() {
@@ -42,7 +41,6 @@
         i.setAttribute('class', 'far fa-trash-alt');
         button.classList.add('del-btn');
         button.appendChild(i);
-        button.addEventListener('click', deleteItem);
         li.appendChild(span);
         li.appendChild(button);
         shoppingListElm.appendChild(li);
@@ -87,6 +85,14 @@
                 submitHandler();
             }
         });
+        shoppingListElm.addEventListener('click',(e) => {
+            let target = e.target;
+            
+            if(target.classList.contains('del-btn')) {
+                deleteItem(target);
+            }
+
+        })
     }
     setInterval(currentTime,1000);
     init();
