@@ -80,7 +80,7 @@
   background: rgba(0, 0, 0, 0.7);
 }
 
-.field {
-  width: 100%;
-  height: 50vh;
+.canvas-field {
+  position: absolute;
+  bottom: 0;
 }
