@@ -6,10 +6,16 @@ export default class Bug {
         this.speed = speed;
         this.width = 160;
         this.height = 160;
+        this.state = Math.floor(Math.random() * 6);
         this.img = new Image();
-        this.img.src = './assets/img/bug.png';
         this.img2 = new Image();
-        this.img2.src = './assets/img/bug2.png';
+        if(this.state > 2) {
+            this.img.src = './assets/img/bug-reverse.png';
+            this.img2.src = './assets/img/bug2-reverse.png';
+        }else {
+            this.img.src = './assets/img/bug.png';
+            this.img2.src = './assets/img/bug2.png';
+        }
         this.motion = false;
         this.ctx = document.querySelector('.canvas-field').getContext('2d');
     }
