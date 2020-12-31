@@ -4,8 +4,8 @@ export default class Bug {
         this.x = x;
         this.y = y;
         this.speed = speed;
-        this.width = 160;
-        this.height = 160;
+        this.width = 60;
+        this.height = 60;
         this.state = Math.floor(Math.random() * 6);
         this.img = new Image();
         this.img2 = new Image();
