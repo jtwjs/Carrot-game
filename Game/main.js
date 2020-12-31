@@ -19,21 +19,25 @@ const timerElm = document.querySelector('.timer-text');
      x:0,
      y:0,
  };
- 
- const CANVAS_WIDTH = field.objs.canvas.width
- const CANVAS_HEIGHT = field.objs.canvas.height;
+ let canvasWidth;
+ let canvasHeight;
  let rafId;
  let rafCnt = 0;
  let count = 10;
  let sec;
 let timerId;
 let playState = false;
+let step;
+let selectedTarget;
 
 
 function canvasSetting() {
-    field.objs.canvas.style.width = `${window.innerWidth}px`;
-    field.objs.canvas.style.height = `${window.innerHeight / 2}px`;
-
+    // field.objs.canvas.style.width = `${window.innerWidth}px`;
+    // field.objs.canvas.style.height = `${window.innerHeight / 2}px`;
+    field.objs.canvas.setAttribute('width', innerWidth);
+    field.objs.canvas.setAttribute('height',innerHeight / 2);
+    canvasWidth = field.objs.canvas.width;
+    canvasHeight = field.objs.canvas.height
 }
 
 
@@ -71,8 +75,8 @@ function generateField() {
 
 
     for(let i=0; i<BUG_NUM; i++) {
-        tempX = Math.floor(Math.random() * (CANVAS_WIDTH * 0.8));
-        tempY = Math.floor(Math.random() * (CANVAS_HEIGHT * 0.8));
+        tempX = Math.floor(Math.random() * (canvasWidth * 0.8));
+        tempY = Math.floor(Math.random() * (canvasHeight * 0.8));
         tempSpeed = Math.floor(Math.random() * 4 + 1);
         if(objs.bugs.length === BUG_NUM) {
             objs.bugs = [];
@@ -81,8 +85,8 @@ function generateField() {
     }
 
     for(let i=0; i<CARROT_NUM; i++) {
-        tempX = Math.floor(Math.random() * (CANVAS_WIDTH * 0.8));
-        tempY = Math.floor(Math.random() * (CANVAS_HEIGHT * 0.8));
+        tempX = Math.floor(Math.random() * (canvasWidth * 0.8));
+        tempY = Math.floor(Math.random() * (canvasHeight * 0.8));
         if(objs.carrots.length === CARROT_NUM) {
             objs.carrots = [];
         }
@@ -94,53 +98,59 @@ function render() {
     rafCnt++;
     const bugStateList = ['E','NE','SE','W','NW','SW'];
     const objs = field.objs;
-    objs.context.clearRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+    objs.context.clearRect(0,0,canvasWidth,canvasHeight);
     for(let carrot of objs.carrots) {
         carrot.draw();
     }
-    for(let bug of objs.bugs) {  
-        if(rafCnt % (Math.floor(20 / bug.speed)) === 0) {
-            bug.motion = !bug.motion;
-        }
 
-        switch(bugStateList[bug.state]) {
-            case 'E':
-                 bug.x += bug.speed; 
-                 break;
-            case 'NE': 
-                bug.x += bug.speed; 
-                bug.y -= bug.speed;
-                break;
-            case 'SE':
-                bug.x += bug.speed; 
-                bug.y += bug.speed;
-                break;
-            case 'W':
-                bug.x -= bug.speed; 
-                break;
-            case 'NW':
-                bug.x -= bug.speed; 
-                bug.y -= bug.speed;
-                break;
-            case 'SW':
-                bug.x -= bug.speed; 
-                bug.y += bug.speed;
-                break;
-        };
-
-        if(bug.x > CANVAS_WIDTH) {
-            bug.x = -bug.width;
-        } else if(bug.x === -bug.width) {
-            bug.x = CANVAS_WIDTH;
-        }
+    switch(step) {
+        case 1:
+            for(let bug of objs.bugs) {  
+                if(rafCnt % (Math.floor(20 / bug.speed)) === 0) {
+                    bug.motion = !bug.motion;
+                }
         
-        if(bug.y > CANVAS_HEIGHT) {
-            bug.y = -bug.height;
-        } else if(bug.y === -bug.height) {
-            bug.y = CANVAS_HEIGHT;
-        }
-    
-            bug.draw();
+                switch(bugStateList[bug.state]) {
+                    case 'E':
+                         bug.x += bug.speed; 
+                         break;
+                    case 'NE': 
+                        bug.x += bug.speed; 
+                        bug.y -= bug.speed;
+                        break;
+                    case 'SE':
+                        bug.x += bug.speed; 
+                        bug.y += bug.speed;
+                        break;
+                    case 'W':
+                        bug.x -= bug.speed; 
+                        break;
+                    case 'NW':
+                        bug.x -= bug.speed; 
+                        bug.y -= bug.speed;
+                        break;
+                    case 'SW':
+                        bug.x -= bug.speed; 
+                        bug.y += bug.speed;
+                        break;
+                };
+        
+                if(bug.x > canvasWidth) {
+                    bug.x = -bug.width;
+                } else if(bug.x === -bug.width) {
+                    bug.x = canvasHeight;
+                }
+                
+                if(bug.y > canvasHeight) {
+                    bug.y = -bug.height;
+                } else if(bug.y === -bug.height) {
+                    bug.y = canvasHeight;
+                }
+            
+                    bug.draw();
+                
+            }
+            break;
         
     }
 
@@ -187,26 +197,22 @@ function gameClickHandler(e) {
     }
 
     if(target.classList.contains('canvas-field')) {
-        mousePos.x = e.layerX;
-        mousePos.y = e.layerY;
-        const carrots = field.objs.carrots;
+        mousePos.x = e.offsetX;
+        mousePos.y = e.offsetY;
         console.log(mousePos);
-        console.log(CANVAS_WIDTH,CANVAS_HEIGHT);
+        const carrots = field.objs.carrots;
         let carrot;
-        let selectedCarrot;
         for(let i=0; i<carrots.length; i++) {
             carrot = carrots[i];
             if(mousePos.x > carrot.x &&
                 mousePos.x < carrot.x + carrot.width &&
                 mousePos.y > carrot.y && 
                 mousePos.y < carrot.y + carrot.height) {
-                    selectedCarrot = carrot;
+                    selectedTarget = carrot;
                 }
         }
-        console.log(selectedCarrot);
 
         const bugs = field.objs.bugs;
-        let selectedBug;
         let bug;
         for(let i=0; i<bugs.length; i++) {
             bug = bugs[i];
@@ -214,19 +220,23 @@ function gameClickHandler(e) {
                 mousePos.x < bug.x + bug.width &&
                 mousePos.y > bug.y &&
                 mousePos.y < bug.y + bug.height) {
-                    selectedBug = bug;
+                    selectedTarget = bug;
                 }
         }
-        console.log(selectedBug);
+        console.log(selectedTarget);
     }
 }
 
  function init() {
+     step = 1;
+    canvasSetting();
+     console.log(canvasWidth);
+     console.log(canvasHeight);
     main.addEventListener('click',gameClickHandler);
     window.addEventListener('resize', () => {
         canvasSetting();
     })
-    canvasSetting();
+    
     generateField();
  }
 
