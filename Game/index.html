@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./assets/W_logo.png" type="image/png">
     <link rel="stylesheet" href="./reset.css">
     <link rel="stylesheet" href="./main.css">
     <script src="https://kit.fontawesome.com/ee291a9192.js" crossorigin="anonymous"></script>
@@ -10,7 +11,7 @@
     <title>Carrot Game</title>
 </head>
 <body>
-    <main id="main">
+    <main id="main" class="" data-result="">
         <div class="tool">
             <div class="play">
                 <button class="play-btn g-btn">
@@ -23,6 +24,7 @@
             <div class="timer">
                 <span class="timer-text">00:00</span>
             </div>
+
             <div class="count">
                 <span class="count-text">0</span>
             </div>
@@ -30,12 +32,20 @@
         <canvas class="canvas-field">
         </canvas>
         <div class="modal">
-            <div class="modal-lose">
+            <div class="modal-item modal-lose">
                 <button class="retry-btn">
                     <i class="fas fa-redo fa-2x g-icon"></i>
                 </button>
                 <span class="modal-text">
                     you lose 😓
+                </span>
+            </div>
+            <div class='modal-item modal-win'>
+                <button class="retry-btn">
+                    <i class="fas fa-redo fa-2x g-icon"></i>
+                </button>
+                <span class="modal-text">
+                    you win 🎉
                 </span>
             </div>
         </div>
