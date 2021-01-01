@@ -26,6 +26,7 @@ const timerElm = document.querySelector('.timer-text');
  let count = 10;
  let sec;
 let timerId;
+let countId;
 let playState = false;
 let step = 0;
 
@@ -49,12 +50,9 @@ function toRadian(degree) {
 function timerStart() {
     timerElm.textContent = `00:${--sec < 10 ? '0'+sec : sec}`;
     if(sec === 0) {
-        clearInterval(timerId);
-        cancelAnimationFrame(rafId);
-        main.classList.remove('playing');
         countElm.textContent = `0`;
-        playState = false;
         step = -1;
+        gameState();
     }   
 }
 function timerHandler() {
@@ -64,8 +62,15 @@ function timerHandler() {
 }
 
 function countHandler() {
-    count = 10;
+    countId = setInterval(carrotCount, 100);
+}
+
+function carrotCount() {
+    count = field.objs.carrots.length;
     countElm.textContent = `${count}`;
+    if(count === 0) {
+        clearInterval(countId);
+    }
 }
 
 function generateField() {
@@ -95,6 +100,26 @@ function generateField() {
     }
 }
 
+function gameState() {
+    switch(step) {
+        case -1:
+        case -2:      
+            cancelAnimationFrame(rafId);
+            clearInterval(timerId);
+            playState = false;
+            main.classList.remove('playing');
+            main.classList.add('lose');
+            rafCnt = 0;
+            break;
+        case 0: 
+            clearInterval(timerId);
+            cancelAnimationFrame(rafId);
+            main.classList.remove('playing');
+            main.classList.add('pause');
+            break;
+    }
+}
+
 function render() {
     rafCnt++;
     const bugStateList = ['E','NE','SE','W','NW','SW'];
@@ -106,12 +131,14 @@ function render() {
 
     switch(step) {
         case -2: 
-            clearInterval(timerId);
             for(let bug of objs.bugs) {
                 bug.draw();
             }   
-            break;
-        
+            gameState();
+            return;
+        case 0: 
+            gameState();
+            return;
         case 1:
             for(let bug of objs.bugs) {  
                 if(rafCnt % (Math.floor(20 / bug.speed)) === 0) {
@@ -172,7 +199,6 @@ function fieldHandler() {
 
 function playBtnHandler() {
     console.log(step);
-    
 
     if(!playState) {
         step = 1;
@@ -192,32 +218,38 @@ function playBtnHandler() {
 
 function pauseBtnHandler() {
     step = 0;
-    clearInterval(timerId);
-    cancelAnimationFrame(rafId);
-    main.classList.remove('playing');
-    main.classList.add('pause');
+    render();
 }
 
 
 
 function gameClickHandler(e) {
     let target = e.target;
+    console.log(target);
     if(target.classList.contains('play-btn')) {
         playBtnHandler();    
         countHandler();
     }
+
     if(target.classList.contains('pause-btn')) {
-        if(step === -2) {
-            return;
-        }
         pauseBtnHandler();
     }
 
+    if(target.classList.contains('retry-btn')) {
+        main.classList.remove('lose');
+        playBtnHandler();    
+        countHandler();
+    }
+
+
+
+
     if(target.classList.contains('canvas-field')) {
+        const objs = field.objs;
         mousePos.x = e.offsetX;
         mousePos.y = e.offsetY;
         let selectedTarget;
-        const carrots = field.objs.carrots;
+        let carrots = objs.carrots;
         let carrot;
         for(let i=0; i<carrots.length; i++) {
             carrot = carrots[i];
@@ -229,7 +261,7 @@ function gameClickHandler(e) {
                 }
         }
 
-        const bugs = field.objs.bugs;
+        const bugs = objs.bugs;
         let bug;
         for(let i=0; i<bugs.length; i++) {
             bug = bugs[i];
@@ -247,7 +279,10 @@ function gameClickHandler(e) {
                     step = -2;
                 break;
                 case 'carrot': 
-                    console.log('당근 수확');
+                    objs.carrots = carrots.filter(carrot => {
+                         return selectedTarget.index !== carrot.index
+                    }
+                    );
                 break;
             }
         }
@@ -256,14 +291,13 @@ function gameClickHandler(e) {
 
  function init() {
     canvasSetting();
-     console.log(canvasWidth);
-     console.log(canvasHeight);
+    generateField();
     main.addEventListener('click',gameClickHandler);
     window.addEventListener('resize', () => {
         canvasSetting();
     })
     
-    generateField();
+    
  }
 
  init();
