@@ -19,6 +19,12 @@ const timerElm = document.querySelector('.timer-text');
      x:0,
      y:0,
  };
+ const carrotSound = new Audio('./assets/sound/carrot_pull.mp3');
+ const alertSound = new Audio('./assets/sound/alert.wav');
+ const bgSound = new Audio('./assets/sound/bg.mp3');
+ const bugSound = new Audio('./assets/sound/bug_pull.mp3');
+ const winSound = new Audio('./assets/sound/game_win.mp3');
+ 
  let canvasWidth;
  let canvasHeight;
  let rafId;
@@ -46,6 +52,14 @@ function toRadian(degree) {
     return degree * Math.PI/180;
 }
 
+function playSound(sound) {
+    sound.currentTime = 0;
+    sound.play();
+}
+
+function stopSound(sound) {
+    sound.pause();
+}
 
 function timerStart() {
     timerElm.textContent = `00:${--sec < 10 ? '0'+sec : sec}`;
@@ -70,6 +84,8 @@ function carrotCount() {
     countElm.textContent = `${count}`;
     if(count === 0) {
         clearInterval(countId);
+        step = 2;
+        gameState();
     }
 }
 
@@ -98,18 +114,17 @@ function generateField() {
         }
         objs.carrots.push(new Carrot(i, tempX, tempY));
     }
+    
 }
 
 function gameState() {
     switch(step) {
         case -1:
         case -2:      
-            cancelAnimationFrame(rafId);
-            clearInterval(timerId);
-            playState = false;
-            main.classList.remove('playing');
-            main.classList.add('lose');
-            rafCnt = 0;
+            gameEnd();
+            stopSound(bgSound);
+            playSound(bugSound);
+            main.dataset.result = 'lose';
             break;
         case 0: 
             clearInterval(timerId);
@@ -117,7 +132,24 @@ function gameState() {
             main.classList.remove('playing');
             main.classList.add('pause');
             break;
+        case 2:
+            gameEnd();
+            stopSound(bgSound);
+            playSound(winSound);
+            main.dataset.result = 'win';
+            
     }
+}
+
+function gameEnd(){
+    cancelAnimationFrame(rafId);
+    clearInterval(timerId);
+    playState = false;
+    main.classList.remove('playing');
+    main.classList.add('end');
+    rafCnt = 0;
+    field.objs.carrots = [];    
+    generateField();
 }
 
 function render() {
@@ -186,6 +218,8 @@ function render() {
                 
             }
             break;
+        case 2: 
+            break;
         
     }
 
@@ -225,20 +259,25 @@ function pauseBtnHandler() {
 
 function gameClickHandler(e) {
     let target = e.target;
-    console.log(target);
     if(target.classList.contains('play-btn')) {
+        playSound(alertSound);
         playBtnHandler();    
         countHandler();
     }
 
     if(target.classList.contains('pause-btn')) {
+        playSound(alertSound);
         pauseBtnHandler();
     }
 
     if(target.classList.contains('retry-btn')) {
-        main.classList.remove('lose');
+        playSound(bgSound);
+        playSound(alertSound);
+        main.dataset.result = '';
+        main.classList.remove('end');
         playBtnHandler();    
         countHandler();
+        
     }
 
 
@@ -275,10 +314,12 @@ function gameClickHandler(e) {
         if(selectedTarget && step === 1) {
             switch(selectedTarget.type) {
                 case 'bug': 
+                    playSound(bugSound);
                     selectedTarget.state -= 6;
                     step = -2;
                 break;
                 case 'carrot': 
+                    playSound(carrotSound);
                     objs.carrots = carrots.filter(carrot => {
                          return selectedTarget.index !== carrot.index
                     }
@@ -290,6 +331,7 @@ function gameClickHandler(e) {
 }
 
  function init() {
+     playSound(bgSound);
     canvasSetting();
     generateField();
     main.addEventListener('click',gameClickHandler);
