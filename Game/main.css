@@ -113,11 +113,11 @@
   z-index: 99;
 }
 
-.lose .modal {
+.end .modal {
   visibility: visible;
 }
 
-.modal-lose {
+.modal-item {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -127,7 +127,17 @@
   border-radius: 10px;
   padding: 1.5rem;
   background: rgba(0, 0, 0, 0.5);
+  visibility: visible;
   transform: translate(-50%, -50%);
+  visibility: hidden;
+}
+
+.end[data-result="lose"] .modal-lose {
+  visibility: visible;
+}
+
+.end[data-result="win"] .modal-win {
+  visibility: visible;
 }
 
 .retry-btn {
