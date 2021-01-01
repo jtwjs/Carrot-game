@@ -1,5 +1,6 @@
 export default class Carrot {
     constructor(index, x, y) {
+        this.type = 'carrot';
         this.index = index;
         this.x = x;
         this.y = y;
