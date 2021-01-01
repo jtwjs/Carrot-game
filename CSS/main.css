@@ -43,7 +43,7 @@
 .loading-stroke {
   stroke-dasharray: 3340;
   stroke-dashoffset: 3340;
-  animation: stroke-ani 1s linear;
+  animation: stroke-ani 1s linear infinite;
 }
 
 /* Main */
