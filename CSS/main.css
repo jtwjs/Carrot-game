@@ -11,7 +11,7 @@
   width: 100%;
   height: 100vh;
   padding: 1rem;
-  background: center / cover no-repeat url(./assets/img/background.png);
+  background: center / cover no-repeat url(../assets/img/background.png);
 }
 
 .tool {
@@ -124,6 +124,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 365px;
+  min-width: 190px;
+  width: 50vw;
   border-radius: 10px;
   padding: 1.5rem;
   background: rgba(0, 0, 0, 0.5);
@@ -157,4 +160,14 @@
   font-weight: 600;
   color: #fff;
   text-transform: uppercase;
+}
+
+@media screen and (max-width: 768px) {
+  .retry-btn {
+    margin-bottom: 1rem;
+  }
+
+  .modal-text {
+    font-size: 5vw;
+  }
 }

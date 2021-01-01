@@ -5,7 +5,7 @@ import Carrot from './canvas_carrot.js';
 const main = document.querySelector('#main');
 const timerElm = document.querySelector('.timer-text');
  const countElm = document.querySelector('.count-text');
- const BUG_NUM = 10;
+ const BUG_NUM = 20;
  const CARROT_NUM = 10;
  const field = {
      objs: {
@@ -39,8 +39,6 @@ let step = 0;
 
 
 function canvasSetting() {
-    // field.objs.canvas.style.width = `${window.innerWidth}px`;
-    // field.objs.canvas.style.height = `${window.innerHeight / 2}px`;
     field.objs.canvas.setAttribute('width', innerWidth);
     field.objs.canvas.setAttribute('height',innerHeight / 2);
     canvasWidth = field.objs.canvas.width;
@@ -70,8 +68,8 @@ function timerStart() {
     }   
 }
 function timerHandler() {
-    sec = 10;
-    timerElm.textContent = `00:${sec}`;
+    sec = 5;
+    timerElm.textContent = `00:${sec < 10 ? '0' + sec: sec}`;
     timerId = setInterval(timerStart, 1000);
 }
 
@@ -336,7 +334,7 @@ function gameClickHandler(e) {
     generateField();
     main.addEventListener('click',gameClickHandler);
     window.addEventListener('resize', () => {
-        canvasSetting();
+        location.reload();
     })
     
     
