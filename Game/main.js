@@ -27,8 +27,8 @@ const timerElm = document.querySelector('.timer-text');
  let sec;
 let timerId;
 let playState = false;
-let step;
-let selectedTarget;
+let step = 0;
+
 
 
 function canvasSetting() {
@@ -54,6 +54,7 @@ function timerStart() {
         main.classList.remove('playing');
         countElm.textContent = `0`;
         playState = false;
+        step = -1;
     }   
 }
 function timerHandler() {
@@ -104,6 +105,13 @@ function render() {
     }
 
     switch(step) {
+        case -2: 
+            clearInterval(timerId);
+            for(let bug of objs.bugs) {
+                bug.draw();
+            }   
+            break;
+        
         case 1:
             for(let bug of objs.bugs) {  
                 if(rafCnt % (Math.floor(20 / bug.speed)) === 0) {
@@ -163,13 +171,18 @@ function fieldHandler() {
 }
 
 function playBtnHandler() {
+    console.log(step);
+    
+
     if(!playState) {
+        step = 1;
         playState = true;
         main.classList.add('playing');
         fieldHandler();
         timerHandler();
     }
     if(main.classList.contains('pause')) {
+        step = 1;
         rafId = requestAnimationFrame(render)
         timerId = setInterval(timerStart, 1000);
         main.classList.remove('pause');
@@ -178,6 +191,7 @@ function playBtnHandler() {
 }
 
 function pauseBtnHandler() {
+    step = 0;
     clearInterval(timerId);
     cancelAnimationFrame(rafId);
     main.classList.remove('playing');
@@ -193,13 +207,16 @@ function gameClickHandler(e) {
         countHandler();
     }
     if(target.classList.contains('pause-btn')) {
+        if(step === -2) {
+            return;
+        }
         pauseBtnHandler();
     }
 
     if(target.classList.contains('canvas-field')) {
         mousePos.x = e.offsetX;
         mousePos.y = e.offsetY;
-        console.log(mousePos);
+        let selectedTarget;
         const carrots = field.objs.carrots;
         let carrot;
         for(let i=0; i<carrots.length; i++) {
@@ -223,12 +240,21 @@ function gameClickHandler(e) {
                     selectedTarget = bug;
                 }
         }
-        console.log(selectedTarget);
+        if(selectedTarget && step === 1) {
+            switch(selectedTarget.type) {
+                case 'bug': 
+                    selectedTarget.state -= 6;
+                    step = -2;
+                break;
+                case 'carrot': 
+                    console.log('당근 수확');
+                break;
+            }
+        }
     }
 }
 
  function init() {
-     step = 1;
     canvasSetting();
      console.log(canvasWidth);
      console.log(canvasHeight);
