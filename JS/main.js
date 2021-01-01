@@ -335,8 +335,15 @@ function gameClickHandler(e) {
     main.addEventListener('click',gameClickHandler);
     window.addEventListener('resize', () => {
         location.reload();
-    })
+    });
     
+
+    document.querySelector('.loading-stroke').addEventListener('animationend', () => {
+        document.body.classList.remove('before-load');
+    });
+    document.querySelector('.loading').addEventListener('transitionend', (e) => {
+        document.body.removeChild(e.currentTarget);
+    })
     
  }
 
