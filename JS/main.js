@@ -337,6 +337,9 @@ function gameClickHandler(e) {
         location.reload();
     });
     
+    window.addEventListener('load', () => {
+        document.querySelector('.loading-stroke').style.animationIterationCount = '1';
+    })
 
     document.querySelector('.loading-stroke').addEventListener('animationend', () => {
         document.body.classList.remove('before-load');
