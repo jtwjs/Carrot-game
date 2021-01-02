@@ -91,7 +91,6 @@ function gameClickHandler(e) {
 }
 
  function init() {
-     sound.playBackground();
      gameField.init();
      gameField.generateField();
     main.addEventListener('click',gameClickHandler);
@@ -101,6 +100,7 @@ function gameClickHandler(e) {
     
     window.addEventListener('load', () => {
         document.querySelector('.loading-stroke').style.animationIterationCount = '1';
+        
     })
 
     window.addEventListener('orientationchange', () => {
@@ -113,9 +113,10 @@ function gameClickHandler(e) {
     });
     document.querySelector('.loading').addEventListener('transitionend', (e) => {
         document.body.removeChild(e.currentTarget);
+        sound.playBackground();
     })
     
  }
-
  init();
+ 
 })();
