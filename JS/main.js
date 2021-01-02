@@ -341,6 +341,11 @@ function gameClickHandler(e) {
         document.querySelector('.loading-stroke').style.animationIterationCount = '1';
     })
 
+    window.addEventListener('orientationchange', () => {
+        canvasSetting();
+        generateField();
+    })
+
     document.querySelector('.loading-stroke').addEventListener('animationend', () => {
         document.body.classList.remove('before-load');
     });
