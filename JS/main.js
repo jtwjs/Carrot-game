@@ -1,11 +1,12 @@
-import Game from './game.js';
+import GameBuilder from './game.js';
 import * as sound from './sound.js';
 
 (() => {
- const BUG_NUM = 20;
- const CARROT_NUM = 10;
- const TIME_LIMIT = 5;
- const game = new Game(TIME_LIMIT,BUG_NUM,CARROT_NUM);
+ const game = new GameBuilder()
+    .withGameDuration(5)
+    .withBugCount(20)
+    .withCarrotCount(10)
+    .build();
 
 
  function init() {
@@ -17,7 +18,6 @@ import * as sound from './sound.js';
     
     window.addEventListener('load', () => {
         document.querySelector('.loading-stroke').style.animationIterationCount = '1';
-        
     })
 
     window.addEventListener('orientationchange', () => {
