@@ -2,7 +2,32 @@ import Field from './field.js';
 import * as sound from './sound.js';
 
 
-export default class Game {
+export default class gameBuilder {
+    withGameDuration(duration) {
+         this.gameDuration = duration;
+         return this;
+    }
+
+    withBugCount(num) {
+        this.bugCount = num;
+        return this;
+    }
+
+    withCarrotCount(num) {
+        this.carrotCount = num;
+        return this;
+    }
+
+    build() {
+        return new Game(
+            this.gameDuration, //
+            this.bugCount,
+            this.carrotCount
+        );
+    }
+}
+
+class Game {
     constructor(limitTime, bugNum, carrotNum) {
         this.timerElm = document.querySelector('.timer-text');
         this.countElm = document.querySelector('.count-text');
