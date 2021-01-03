@@ -1,4 +1,4 @@
-import Field from './field.js';
+import {Step, Field} from './field.js';
 import * as sound from './sound.js';
 
 
@@ -52,7 +52,7 @@ class Game {
         this.timerElm.textContent = `00:${--this.sec < 10 ? '0'+this.sec : this.sec}`;
         if(this.sec === 0) {
             this.countElm.textContent = `0`;
-            this.gameField.setStep(-1);
+            this.gameField.setStep(Step.lose);
             this.gameField.gameEnd();
         }   
     }
@@ -66,13 +66,13 @@ class Game {
         this.countElm.textContent = `${this.count}`;
         if(this.count === 0) {
             clearInterval(this.countId);
-            this.gameField.setStep(2);
+            this.gameField.setStep(Step.win);
         }
     }
 
     playBtnHandler() {
         if(!this.gameField.getPlayState()) {
-            this.gameField.setStep(1);
+            this.gameField.setStep(Step.play);
             this.gameField.setPlayState(true);
             this.mainElm.classList.add('playing');
             this.gameField.generate();
@@ -80,7 +80,7 @@ class Game {
             this.timerHandler();
         }
         if(this.mainElm.classList.contains('pause')) {
-            this.gameField.setStep(1);
+            this.gameField.setStep(Step.play);
             this.gameField.setRafId(requestAnimationFrame(() => this.gameField.render())); 
             this.timerId = setInterval(() => this.timerStart(), 1000);
             this.gameField.setTimerId(this.timerId);
@@ -99,7 +99,7 @@ class Game {
     
         if(target.classList.contains('pause-btn')) {
             sound.playAlert();
-            this.gameField.setStep(0);
+            this.gameField.setStep(Step.stop);
         }
     
         if(target.classList.contains('retry-btn')) {

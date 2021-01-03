@@ -3,7 +3,14 @@ import Carrot from './canvas_carrot.js';
 import * as sound from './sound.js';
 const main = document.querySelector('#main');
 
-export default class Field {
+export const Step = Object.freeze({
+    win: 'win',
+    lose: 'lose',
+    play: 'play',
+    stop: 'stop',
+});
+
+export class Field {
     constructor(bugNum, carrotNum) {
         this.rafCnt = 0;
         this.bugNum = bugNum;
@@ -16,7 +23,7 @@ export default class Field {
         };
         this.rafId;
         this.timerId;
-        this.step = 0;
+        this.step = Step.stop;
         this.canvas = document.querySelector('.canvas-field');
         this.ctx = this.canvas.getContext('2d');
         this.canvasWidth;
@@ -74,12 +81,12 @@ export default class Field {
                         selectedTarget = bug;
                     }
             }
-            if(selectedTarget && this.step === 1) {
+            if(selectedTarget && this.step === Step.play) {
                 switch(selectedTarget.type) {
                     case 'bug': 
                         sound.playBug();
                         selectedTarget.state -= 6;
-                        this.step = -2;
+                        this.step = Step.lose;
                     break;
                     case 'carrot': 
                         sound.playCarrot();
@@ -128,19 +135,16 @@ export default class Field {
         }
 
         switch(this.step) {
-            case -2: 
+            case Step.win: 
+                this.gameEnd();
+                return;   
+            case Step.lose: 
                 for(let bug of this.bugList) {
                     bug.draw();
                 }   
                 this.gameEnd();
                 return;
-            case 0: 
-                clearInterval(this.timerId);
-                cancelAnimationFrame(this.rafId);
-                main.classList.remove('playing');
-                main.classList.add('pause');            
-                return;
-            case 1:
+            case Step.play:
                 for(let bug of this.bugList) {  
                     if(this.rafCnt % (Math.floor(20 / bug.speed)) === 0) {
                         bug.motion = !bug.motion;
@@ -185,19 +189,25 @@ export default class Field {
                         bug.draw();
                 }
                 break;
-            case 2: 
-                this.gameEnd();
-                return;   
+
+            case Step.stop: 
+                clearInterval(this.timerId);
+                cancelAnimationFrame(this.rafId);
+                main.classList.remove('playing');
+                main.classList.add('pause');            
+            return;
+            default:
+                    throw new Error('Not valid step');
         }
         this.rafId = requestAnimationFrame(() => this.render());
     }
 
     gameEnd(){
         sound.stopBackground();
-        if(this.step === 2) {
+        if(this.step === Step.win) {
             sound.playWin();
             main.dataset.result = 'win';
-        } else if(this.step < 0 ) {
+        } else if(this.step === Step.lose ) {
             sound.playBug();
             main.dataset.result = 'lose';
         }
