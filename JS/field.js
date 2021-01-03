@@ -93,7 +93,7 @@ export default class Field {
 
     }
 
-    generateField() {
+    generate() {
         let tempX;
         let tempY;
         let tempSpeed;
@@ -208,7 +208,7 @@ export default class Field {
         main.classList.add('end');
         this.rafCnt = 0;
         this.carrotList = [];    
-        this.generateField();
+        this.generate();
     }
 
 
