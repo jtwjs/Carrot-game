@@ -1,16 +1,16 @@
-export const bugState = {
+export const bugState = Object.freeze({
     alive: 'alive',
     death: 'death',
-}
+});
 
-export const bugMovement = {
+export const bugMovement = Object.freeze({
     East: 'E',
     NothEast : 'NE',
     SouthEast: 'SE',
     West: 'W',
     NothWest: 'NW',
     SouthWest: 'SW',
-}
+});
 
 export  class Bug {
     constructor(index, x, y, speed) {
