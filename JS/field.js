@@ -1,4 +1,4 @@
-import Bug from './canvas_bug.js';
+import {bugState, bugMovement, Bug}from './canvas_bug.js';
 import Carrot from './canvas_carrot.js';
 import * as sound from './sound.js';
 const main = document.querySelector('#main');
@@ -56,7 +56,6 @@ export class Field {
     }
 
     gameClickHandler(e) {
-
         this.mousePos.x = e.offsetX;
         this.mousePos.y = e.offsetY;
             let selectedTarget;
@@ -84,8 +83,9 @@ export class Field {
             if(selectedTarget && this.step === Step.play) {
                 switch(selectedTarget.type) {
                     case 'bug': 
+                        selectedTarget.setState(bugState.death);
+                        selectedTarget.y += selectedTarget.height / 3;
                         sound.playBug();
-                        selectedTarget.state -= 6;
                         this.step = Step.lose;
                     break;
                     case 'carrot': 
@@ -128,7 +128,6 @@ export class Field {
     
     render() {
         this.rafCnt++;
-        const bugStateList = ['E','NE','SE','W','NW','SW'];
         this.ctx.clearRect(0,0,this.canvasWidth,this.canvasHeight);
         for(let carrot of this.carrotList) {
             carrot.draw();
@@ -150,26 +149,26 @@ export class Field {
                         bug.motion = !bug.motion;
                     }
             
-                    switch(bugStateList[bug.state]) {
-                        case 'E':
+                    switch(bug.movement.details) {
+                        case bugMovement.East:
                             bug.x += bug.speed; 
                             break;
-                        case 'NE': 
+                        case bugMovement.NothEast: 
                             bug.x += bug.speed; 
                             bug.y -= bug.speed;
                             break;
-                        case 'SE':
+                        case bugMovement.SouthEast:
                             bug.x += bug.speed; 
                             bug.y += bug.speed;
                             break;
-                        case 'W':
+                        case bugMovement.West:
                             bug.x -= bug.speed; 
                             break;
-                        case 'NW':
+                        case bugMovement.NothWest:
                             bug.x -= bug.speed; 
                             bug.y -= bug.speed;
                             break;
-                        case 'SW':
+                        case bugMovement.SouthWest:
                             bug.x -= bug.speed; 
                             bug.y += bug.speed;
                             break;
